@@ -1,8 +1,8 @@
 ========== End of Day Report ==========
 Log files:
-day1.log | size=114 bytes | modified=2026-10-27T04:48:46.685673848Z
-day2.log | size=75 bytes | modified=2026-10-27T04:48:46.686673852Z
-Total deposits    : 7500
-Total withdrawals : 1500
-Net flow          : 6000
+day1.log | size=152 bytes | modified=2026-10-27T04:52:27.944700693Z
+day2.log | size=100 bytes | modified=2026-10-27T04:52:27.944700693Z
+Total deposits    : 10000
+Total withdrawals : 2000
+Net flow          : 8000
 =======================================
