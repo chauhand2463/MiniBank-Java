@@ -14,6 +14,7 @@ import model.Customer;
 import model.FixedDepositAccount;
 import model.MenuOption;
 import model.SavingsAccount;
+import model.TransactionType;
 import model.WithdrawRule;
 import util.AnnotationValidator;
 import util.CommandParser;
@@ -178,6 +179,50 @@ public class MiniBank {
             }
         }
         System.out.println("Final balance: " + threadDemo.getBalance() + " (expected 10000)");
+
+        System.out.println();
+        TransactionProcessor processor = new TransactionProcessor();
+        for (int i = 0; i < 20; i++) {
+            processor.submit(new TransactionTask(threadDemo, TransactionType.DEPOSIT, 100));
+            if (i % 3 == 0) {
+                processor.submit(new TransactionTask(threadDemo, TransactionType.WITHDRAW, 50));
+            }
+        }
+        processor.stop();
+        System.out.println("Pool final balance: " + threadDemo.getBalance() + " (expected 11650)");
+
+        System.out.println();
+        ProducerConsumer queue = new ProducerConsumer();
+        Account consumerAccount = new SavingsAccount("Producer Consumer Demo", 0, 0);
+        Thread producer = new Thread(() -> {
+            for (int i = 0; i < 20; i++) {
+                try {
+                    queue.produce(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }, "producer");
+        Thread consumer = new Thread(() -> {
+            for (int i = 0; i < 20; i++) {
+                try {
+                    consumerAccount.deposit(queue.consume());
+                } catch (InterruptedException | InvalidAmountException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }, "consumer");
+        producer.start();
+        consumer.start();
+        try {
+            producer.join();
+            consumer.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        System.out.println("Consumed total: " + consumerAccount.getBalance() + " (expected 2000)");
 
         int choice = 0;
 
