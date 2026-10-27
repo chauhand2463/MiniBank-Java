@@ -11,6 +11,7 @@ import model.FixedDepositAccount;
 import model.MenuOption;
 import model.SavingsAccount;
 import model.WithdrawRule;
+import util.AnnotationValidator;
 import util.CommandParser;
 import util.StatementFormatter;
 import util.Validator;
@@ -105,6 +106,13 @@ public class MiniBank {
 
         System.out.println();
         System.out.print(StatementFormatter.buildStatement(accounts[0]));
+
+        SavingsAccount invalidAccount = new SavingsAccount("Validation Demo", -500, 1000);
+        String[] validationErrors = AnnotationValidator.validate(invalidAccount);
+        System.out.println("Annotation validation errors:");
+        for (String error : validationErrors) {
+            System.out.println(" - " + error);
+        }
 
         int choice = 0;
 
