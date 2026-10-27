@@ -20,21 +20,34 @@ public class MiniBank {
         System.out.println("  " + bank.name() + " - " + bank.branch());
 
         Account[] accounts = {
-                new Account("Dhairy Chauhan", 5000),
-                new Account("Goku"),
-                new Account("Vegeta", 12000),
-                new Account("Gojo Satoru", 25000)
+                new SavingsAccount("Dhairy Chauhan", 5000, 1000),
+                new CurrentAccount("Goku", 2000, 5000),
+                new FixedDepositAccount("Vegeta", 25000),
+                new SavingsAccount("Gojo Satoru", 12000, 5000)
         };
 
         accounts[0].deposit(2500);
         accounts[0].withdraw(1000);
         accounts[1].deposit(8000);
-        accounts[1].withdraw(9000);
         accounts[2].withdraw(3000);
 
         System.out.println();
         for (Account a : accounts) {
             System.out.println(a);
+        }
+
+        System.out.println();
+        for (Account a : accounts) {
+            System.out.println(a.getOwnerName() + " | " + a.interestRate() + "% interest");
+            if (a instanceof SavingsAccount sa) {
+                System.out.println("   Savings: min balance " + sa.getMinBalance()
+                        + ", canWithdraw(2000) -> " + sa.canWithdraw(2000));
+            } else if (a instanceof CurrentAccount ca) {
+                System.out.println("   Current: overdraft limit " + ca.getOverdraftLimit()
+                        + ", canWithdraw(6000) -> " + ca.canWithdraw(6000));
+            } else if (a instanceof FixedDepositAccount) {
+                System.out.println("   FD: locked, canWithdraw(1) -> " + a.canWithdraw(1));
+            }
         }
 
         System.out.println();
