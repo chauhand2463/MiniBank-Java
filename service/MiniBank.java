@@ -162,6 +162,23 @@ public class MiniBank {
                     + " balance " + accounts[0].getBalance());
         }
 
+        System.out.println();
+        Account threadDemo = new SavingsAccount("Thread Demo", 0, 0);
+        Thread[] workers = new Thread[10];
+        for (int i = 0; i < workers.length; i++) {
+            workers[i] = new Thread(new AccountWorker(threadDemo, 1000, 1), "worker-" + (i + 1));
+            workers[i].start();
+        }
+        for (Thread worker : workers) {
+            try {
+                worker.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.out.println("Thread interrupted: " + e.getMessage());
+            }
+        }
+        System.out.println("Final balance: " + threadDemo.getBalance() + " (expected 10000)");
+
         int choice = 0;
 
         while (choice != 5) {
