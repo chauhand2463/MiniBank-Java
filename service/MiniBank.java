@@ -277,6 +277,19 @@ public class MiniBank {
         System.out.println("Lookup AC0002: " + store.get("AC0002"));
         System.out.println("Transaction history: " + store.getTransactionHistory());
 
+        System.out.println();
+        Repository<Account> repository = new Repository<>();
+        repository.save(accounts[0]);
+        repository.save(accounts[1]);
+        repository.saveAll(accounts[2], accounts[3]);
+        System.out.println("Repository findById AC0003: " + repository.findById("AC0003"));
+        System.out.println("Repository findAll:");
+        for (Account a : repository.findAll()) {
+            System.out.println("  " + a);
+        }
+        System.out.println("Average balance: "
+                + Repository.average(new Long[] { accounts[0].getBalance(), accounts[1].getBalance() }));
+
         int choice = 0;
 
         while (choice != 5) {
