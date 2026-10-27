@@ -22,4 +22,9 @@ public class SavingsAccount extends Account {
     public boolean canWithdraw(long amount) {
         return amount > 0 && getBalance() - amount >= minBalance;
     }
+
+    @Override
+    protected long availableBalance() {
+        return getBalance() - minBalance;
+    }
 }

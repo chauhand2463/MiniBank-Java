@@ -1,5 +1,9 @@
 package model;
 
+import exception.AccountNotFoundException;
+import exception.BankException;
+import exception.InsufficientFundsException;
+import exception.InvalidAmountException;
 import model.annotation.Id;
 import model.annotation.Positive;
 
@@ -31,19 +35,43 @@ public abstract class Account implements Transactable, InterestBearing {
     }
 
     @Override
-    public void deposit(long amount) {
-        if (amount > 0) {
-            balance += amount;
+    public void deposit(long amount) throws InvalidAmountException {
+        if (amount <= 0) {
+            throw new InvalidAmountException("Deposit amount must be greater than zero");
         }
+        balance += amount;
     }
 
     @Override
-    public boolean withdraw(long amount) {
-        if (amount > 0 && amount <= balance && canWithdraw(amount)) {
-            balance -= amount;
-            return true;
+    public void withdraw(long amount) throws InsufficientFundsException, InvalidAmountException {
+        if (amount <= 0) {
+            throw new InvalidAmountException("Withdrawal amount must be greater than zero");
         }
-        return false;
+        if (!canWithdraw(amount)) {
+            throw new InsufficientFundsException(
+                    "Insufficient funds: requested " + amount + ", available " + availableBalance(),
+                    amount - availableBalance());
+        }
+        balance -= amount;
+    }
+
+    public void transfer(Account to, long amount) throws BankException {
+        if (to == null) {
+            throw new AccountNotFoundException("Destination account not found");
+        }
+        try {
+            withdraw(amount);
+            to.deposit(amount);
+        } catch (InvalidAmountException | InsufficientFundsException e) {
+            throw new BankException("Transfer failed: " + e.getMessage(), e);
+        } finally {
+            System.out.println("Transfer of " + amount + " from " + accountNumber
+                    + " to " + to.accountNumber + " processed");
+        }
+    }
+
+    protected long availableBalance() {
+        return balance;
     }
 
     public abstract double interestRate();

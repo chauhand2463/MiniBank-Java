@@ -2,6 +2,10 @@ package service;
 
 import java.util.Scanner;
 
+import exception.AccountNotFoundException;
+import exception.BankException;
+import exception.InsufficientFundsException;
+import exception.InvalidAmountException;
 import model.Account;
 import model.BankInfo;
 import model.Command;
@@ -14,6 +18,7 @@ import model.WithdrawRule;
 import util.AnnotationValidator;
 import util.CommandParser;
 import util.StatementFormatter;
+import util.TransactionLogger;
 import util.Validator;
 
 import static util.Validator.isValidMobile;
@@ -33,10 +38,16 @@ public class MiniBank {
                 new SavingsAccount("Gojo Satoru", 12000, 5000)
         };
 
-        accounts[0].deposit(2500);
-        accounts[0].withdraw(1000);
-        accounts[1].deposit(8000);
-        accounts[2].withdraw(3000);
+        try {
+            accounts[0].deposit(2500);
+            accounts[0].withdraw(1000);
+            accounts[1].deposit(8000);
+            accounts[2].withdraw(3000);
+        } catch (InsufficientFundsException | InvalidAmountException e) {
+            System.out.println("Operation failed: " + e.getMessage());
+        } finally {
+            System.out.println("Initial transaction batch finished");
+        }
 
         System.out.println();
         for (Account a : accounts) {
@@ -112,6 +123,43 @@ public class MiniBank {
         System.out.println("Annotation validation errors:");
         for (String error : validationErrors) {
             System.out.println(" - " + error);
+        }
+
+        System.out.println();
+        try {
+            accounts[0].withdraw(100000);
+        } catch (InsufficientFundsException | InvalidAmountException e) {
+            System.out.println("Withdrawal failed: " + e.getMessage()
+                    + (e instanceof InsufficientFundsException ife
+                            ? " | shortfall: " + ife.getShortfall() : ""));
+        } finally {
+            System.out.println("Withdrawal attempt complete");
+        }
+
+        try {
+            accounts[0].deposit(-50);
+        } catch (InvalidAmountException e) {
+            System.out.println("Deposit failed: " + e.getMessage());
+        }
+
+        try {
+            accounts[0].transfer(accounts[1], 1500);
+            System.out.println("Transfer successful");
+        } catch (BankException e) {
+            System.out.println("Transfer failed: " + e.getMessage());
+        }
+
+        try {
+            accounts[0].transfer(null, 100);
+        } catch (AccountNotFoundException e) {
+            System.out.println("Transfer failed: " + e.getMessage());
+        } catch (BankException e) {
+            System.out.println("Transfer failed: " + e.getMessage());
+        }
+
+        try (TransactionLogger logger = new TransactionLogger("minibank-audit")) {
+            logger.log("Account " + accounts[0].getAccountNumber()
+                    + " balance " + accounts[0].getBalance());
         }
 
         int choice = 0;

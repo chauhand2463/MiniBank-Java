@@ -22,4 +22,9 @@ public class CurrentAccount extends Account {
     public boolean canWithdraw(long amount) {
         return amount > 0 && getBalance() - amount >= -overdraftLimit;
     }
+
+    @Override
+    protected long availableBalance() {
+        return getBalance() + overdraftLimit;
+    }
 }
