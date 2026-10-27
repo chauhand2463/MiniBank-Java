@@ -53,6 +53,25 @@ public class MiniBank {
                 + " | " + vegita.getAddress().getCity());
         System.out.println("Cloned   : " + vegitaCopy.getName() + " | " + vegitaCopy.getCustomerId());
 
+        System.out.println();
+        System.out.println("Mobile 9876543210 : " + Validator.isValidMobile("9876543210"));
+        System.out.println("Mobile 12345      : " + Validator.isValidMobile("12345"));
+        System.out.println("Email goku@dbz.com : " + Validator.isValidEmail("goku@dbz.com"));
+        System.out.println("Email goku@dbz    : " + Validator.isValidEmail("goku@dbz"));
+        System.out.println("PAN ABCDE1234F    : " + Validator.isValidPan("ABCDE1234F"));
+        System.out.println("PAN abcde1234f    : " + Validator.isValidPan("abcde1234f"));
+        System.out.println("IFSC SBIN0001234  : " + Validator.isValidIfsc("SBIN0001234"));
+        System.out.println("IFSC SBINXXX1234  : " + Validator.isValidIfsc("SBINXXX1234"));
+
+        Command cmd = CommandParser.parse("DEPOSIT AC0001 500");
+        System.out.println();
+        System.out.println("Type    : " + cmd.type());
+        System.out.println("Account : " + cmd.accountNumber());
+        System.out.println("Amount  : " + cmd.amount());
+
+        System.out.println();
+        System.out.print(StatementFormatter.buildStatement(accounts[0]));
+
         int choice = 0;
 
         while (choice != 5) {
