@@ -188,10 +188,12 @@ public class MiniBank {
 
         System.out.println();
         TransactionProcessor processor = new TransactionProcessor();
+        processor.addAccount(threadDemo);
+        Account pooled = processor.getAccount(threadDemo.getAccountNumber());
         for (int i = 0; i < 20; i++) {
-            processor.submit(new TransactionTask(threadDemo, TransactionType.DEPOSIT, 100));
+            processor.submit(new TransactionTask(pooled, TransactionType.DEPOSIT, 100));
             if (i % 3 == 0) {
-                processor.submit(new TransactionTask(threadDemo, TransactionType.WITHDRAW, 50));
+                processor.submit(new TransactionTask(pooled, TransactionType.WITHDRAW, 50));
             }
         }
         processor.stop();
@@ -259,6 +261,21 @@ public class MiniBank {
         } catch (IOException e) {
             System.out.println("Reporting failed: " + e.getMessage());
         }
+
+        System.out.println();
+        AccountStore store = new AccountStore();
+        for (Account a : accounts) {
+            store.add(a);
+        }
+        store.addTransaction("Store initialised with " + store.getAll().size() + " accounts");
+        store.addTransaction("Sorted snapshot requested");
+
+        System.out.println("Accounts sorted by balance:");
+        for (Account a : store.sortedByBalance()) {
+            System.out.println("  " + a);
+        }
+        System.out.println("Lookup AC0002: " + store.get("AC0002"));
+        System.out.println("Transaction history: " + store.getTransactionHistory());
 
         int choice = 0;
 
