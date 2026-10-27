@@ -52,4 +52,27 @@ public class Account {
     public boolean isActive() {
         return active;
     }
+
+    @Override
+    public String toString() {
+        return "Account [accountNumber=" + accountNumber + ", ownerName=" + ownerName
+                + ", balance=" + balance + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Account other = (Account) o;
+        return accountNumber.equals(other.accountNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return accountNumber.hashCode();
+    }
 }

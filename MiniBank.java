@@ -34,9 +34,24 @@ public class MiniBank {
 
         System.out.println();
         for (Account a : accounts) {
-            System.out.println(a.getAccountNumber() + " | " + a.getOwnerName()
-                    + " | Balance: " + a.getBalance());
+            System.out.println(a);
         }
+
+        System.out.println();
+        System.out.println("accounts[0].equals(accounts[0]) -> " + accounts[0].equals(accounts[0]));
+        System.out.println("accounts[0].equals(accounts[1]) -> " + accounts[0].equals(accounts[1]));
+
+        Object obj = accounts[0];
+        if (obj instanceof Account) {
+            System.out.println("obj is an Account instance");
+        }
+        Customer vegita = new Customer("Vegeta", "vegeta@minibank.com", "9000000001",
+                new Customer.Address("Capsule Corp", "West City", "110086"));
+        Customer vegitaCopy = vegita.clone();
+        System.out.println();
+        System.out.println("Original : " + vegita.getName() + " | " + vegita.getCustomerId()
+                + " | " + vegita.getAddress().getCity());
+        System.out.println("Cloned   : " + vegitaCopy.getName() + " | " + vegitaCopy.getCustomerId());
 
         int choice = 0;
 
