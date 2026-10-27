@@ -1,8 +1,14 @@
 package model;
 
-public class Customer implements Cloneable {
+import java.io.Serializable;
 
-    public static class Address {
+public class Customer implements Cloneable, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    public static class Address implements Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         private String line;
         private String city;

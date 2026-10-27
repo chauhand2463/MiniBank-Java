@@ -1,5 +1,8 @@
 package service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Scanner;
 
 import exception.AccountNotFoundException;
@@ -18,7 +21,10 @@ import model.TransactionType;
 import model.WithdrawRule;
 import util.AnnotationValidator;
 import util.CommandParser;
+import util.ReportGenerator;
 import util.StatementFormatter;
+import util.StatePersister;
+import util.TransactionLog;
 import util.TransactionLogger;
 import util.Validator;
 
@@ -223,6 +229,36 @@ public class MiniBank {
             Thread.currentThread().interrupt();
         }
         System.out.println("Consumed total: " + consumerAccount.getBalance() + " (expected 2000)");
+
+        System.out.println();
+        Path dataDir = Path.of("data");
+        Path logsDir = dataDir.resolve("logs");
+        Path accountsFile = dataDir.resolve("accounts.dat");
+        Path reportFile = dataDir.resolve("report.txt");
+        try {
+            Files.createDirectories(logsDir);
+            StatePersister.save(accounts, accountsFile);
+            Account[] loaded = StatePersister.load(accountsFile);
+            System.out.println("Accounts reloaded from " + accountsFile + ":");
+            for (Account a : loaded) {
+                System.out.println("  " + a);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Persistence failed: " + e.getMessage());
+        }
+
+        try {
+            TransactionLog.append(logsDir.resolve("day1.log"), "DEPOSIT 500");
+            TransactionLog.append(logsDir.resolve("day1.log"), "WITHDRAW 200");
+            TransactionLog.append(logsDir.resolve("day1.log"), "DEPOSIT 1200");
+            TransactionLog.append(logsDir.resolve("day2.log"), "WITHDRAW 300");
+            TransactionLog.append(logsDir.resolve("day2.log"), "DEPOSIT 800");
+            ReportGenerator.generate(logsDir, reportFile);
+            System.out.println();
+            System.out.print(Files.readString(reportFile));
+        } catch (IOException e) {
+            System.out.println("Reporting failed: " + e.getMessage());
+        }
 
         int choice = 0;
 
